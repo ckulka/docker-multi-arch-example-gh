@@ -1,0 +1,30 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Show Docker version
+      run: docker --version
+    # Register qemu-*-static for all supported processors except the 
+    # current one, but also remove all registered binfmt_misc before
+    - name: Register QEMU
+      run: docker run --rm --privileged multiarch/qemu-user-static:register --reset
+    - name: Build the Docker image (amd64)
+      run: docker build . --file amd64.dockerfile --tag ckulka/docker-multi-arch-example-gh:amd64
+    - name: Build the Docker image (arm32v5)
+      run: docker build . --file arm32v5.dockerfile --tag ckulka/docker-multi-arch-example-gh:arm32v5
+    - name: Download manifest tool
+      run: curl -Lo manifest-tool https://github.com/estesp/manifest-tool/releases/download/v0.9.0/manifest-tool-linux-amd64
+    - name: Make manifest tool executable
+      run: chmod +x manifest-tool
