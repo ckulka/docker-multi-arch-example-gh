@@ -1,4 +1,4 @@
-FROM --platform=linux/arm/v5 python:3-slim
+FROM arm32v5/python:3-slim
 
 # Install requirements
 WORKDIR /usr/src/app
