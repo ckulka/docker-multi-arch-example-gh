@@ -13,17 +13,38 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Show Docker version
-      run: docker --version
+
+    # See https://github.com/actions-hub/docker
+    - name: Login to docker hub
+      uses: actions-hub/docker/login@v1.0.2
+      env:
+        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+
     # Register qemu-*-static for all supported processors except the 
     # current one, but also remove all registered binfmt_misc before
     - name: Register QEMU
       run: docker run --rm --privileged multiarch/qemu-user-static:register --reset
+
     - name: Build the Docker image (amd64)
-      run: docker build . --file amd64.dockerfile --tag ckulka/docker-multi-arch-example-gh:amd64
+      run: |
+        docker build . --file amd64.dockerfile --tag ${{ github.repository }}:amd64
+        docker push ${{ github.repository }}:amd64
     - name: Build the Docker image (arm32v5)
-      run: docker build . --file arm32v5.dockerfile --tag ckulka/docker-multi-arch-example-gh:arm32v5
-    - name: Download manifest tool
-      run: curl -Lo manifest-tool https://github.com/estesp/manifest-tool/releases/download/v0.9.0/manifest-tool-linux-amd64
-    - name: Make manifest tool executable
-      run: chmod +x manifest-tool
+      run: |
+        docker build . --file arm32v5.dockerfile --tag ${{ github.repository }}:arm32v5
+        docker push ${{ github.repository }}:arm32v5
+    - name: Build the Docker image (arm32v5)
+      run: |
+        docker build . --file arm32v7.dockerfile --tag ${{ github.repository }}:arm32v7
+        docker push ${{ github.repository }}:arm32v7
+    - name: Build the Docker image (arm32v5)
+      run: |
+        docker build . --file arm64v8.dockerfile --tag ${{ github.repository }}:arm64v8
+        docker push ${{ github.repository }}:arm64v8
+
+    - name: Publish manifest
+      run: |
+        curl -Lo manifest-tool https://github.com/estesp/manifest-tool/releases/download/v0.9.0/manifest-tool-linux-amd64
+        chmod +x manifest-tool
+        ./manifest-tool push from-spec multi-arch-manifest.yaml
