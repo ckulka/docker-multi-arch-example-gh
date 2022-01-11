@@ -43,7 +43,7 @@ jobs:
       uses: docker/build-push-action@v2
       with:
         file: arm32v5.dockerfile
-        platforms: linux/arm
+        platforms: linux/arm/v5
         push: true
         tags: ckulka/docker-multi-arch-example-gh:arm32v5
 
@@ -51,7 +51,7 @@ jobs:
       uses: docker/build-push-action@v2
       with:
         file: arm32v7.dockerfile
-        platforms: linux/arm
+        platforms: linux/arm/v7
         push: true
         tags: ckulka/docker-multi-arch-example-gh:arm32v7
 
@@ -59,6 +59,13 @@ jobs:
       uses: docker/build-push-action@v2
       with:
         file: arm64v8.dockerfile
-        platforms: linux/arm
+        platforms: linux/arm/v8
         push: true
         tags: ckulka/docker-multi-arch-example-gh:arm64v8
+
+    - name: Publish manifest
+      run: |
+        docker manifest create ckulka/docker-multi-arch-example-gh:latest ckulka/docker-multi-arch-example-gh:amd64 ckulka/docker-multi-arch-example-gh:arm32v5 ckulka/docker-multi-arch-example-gh:arm32v7 ckulka/docker-multi-arch-example-gh:arm64v8
+        docker manifest push ckulka/docker-multi-arch-example-gh:latest
+      env:
+        DOCKER_CLI_EXPERIMENTAL: enabled
