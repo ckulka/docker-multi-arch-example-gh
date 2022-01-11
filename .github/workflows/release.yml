@@ -1,19 +1,16 @@
 name: release
 
 on:
-  push:
-    branches-ignore:
-      - "*"
-    tags:
-      - "*"
+  release:
+    types:
+      - published
 
 jobs:
   latest:
-    if: github.ref_name == '0.1.0'
     uses: ckulka/docker-multi-arch-example-gh/.github/workflows/docker-image.yml@master
     with:
-      variant: experimental
-      variant_prefix: experimental-
+      variant: latest
+      variant_prefix: ""
     secrets:
       username: ${{ secrets.DOCKER_USERNAME }}
       password: ${{ secrets.DOCKER_PASSWORD }}
