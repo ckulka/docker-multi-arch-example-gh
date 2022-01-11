@@ -31,14 +31,6 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
-    - name: Build and push (amd64)
-      uses: docker/build-push-action@v2
-      with:
-        file: amd64.dockerfile
-        platforms: linux/amd64
-        push: true
-        tags: ckulka/docker-multi-arch-example-gh:amd64
-
     - name: Build and push (arm32v5)
       uses: docker/build-push-action@v2
       with:
@@ -47,25 +39,35 @@ jobs:
         push: true
         tags: ckulka/docker-multi-arch-example-gh:arm32v5
 
-    - name: Build and push (arm32v7)
+    - name: Build and push (amd64)
       uses: docker/build-push-action@v2
       with:
-        file: arm32v7.dockerfile
-        platforms: linux/arm
+        file: amd64.dockerfile
         push: true
-        tags: ckulka/docker-multi-arch-example-gh:arm32v7
+        tags: ckulka/docker-multi-arch-example-gh:amd64
 
-    - name: Build and push (arm64v8)
-      uses: docker/build-push-action@v2
-      with:
-        file: arm64v8.dockerfile
-        platforms: linux/arm
-        push: true
-        tags: ckulka/docker-multi-arch-example-gh:arm64v8
+#     - name: Build and push (arm32v7)
+#       uses: docker/build-push-action@v2
+#       with:
+#         file: arm32v7.dockerfile
+#         platforms: linux/arm/v7
+#         push: true
+#         tags: ckulka/docker-multi-arch-example-gh:arm32v7
+# 
+#     - name: Build and push (arm64v8)
+#       uses: docker/build-push-action@v2
+#       with:
+#         file: arm64v8.dockerfile
+#         platforms: linux/arm64/v8
+#         push: true
+#         tags: ckulka/docker-multi-arch-example-gh:arm64v8
 
     - name: Publish manifest
       run: |
         docker manifest create ckulka/docker-multi-arch-example-gh:latest ckulka/docker-multi-arch-example-gh:amd64 ckulka/docker-multi-arch-example-gh:arm32v5 ckulka/docker-multi-arch-example-gh:arm32v7 ckulka/docker-multi-arch-example-gh:arm64v8
+        docker manifest annotate --os linux --arch arm --variant v5 ckulka/docker-multi-arch-example-gh:latest ckulka/docker-multi-arch-example-gh:arm32v5
+        docker manifest annotate --os linux --arch arm --variant v7 ckulka/docker-multi-arch-example-gh:latest ckulka/docker-multi-arch-example-gh:arm32v7
+        docker manifest annotate --os linux --arch arm64 --variant v8 ckulka/docker-multi-arch-example-gh:latest ckulka/docker-multi-arch-example-gh:arm64v8
         docker manifest push ckulka/docker-multi-arch-example-gh:latest
       env:
         DOCKER_CLI_EXPERIMENTAL: enabled
