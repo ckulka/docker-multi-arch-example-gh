@@ -1,3 +1,5 @@
+# See https://github.com/docker/build-push-action/blob/master/docs/advanced/multi-platform.md
+
 name: Docker Image CI
 
 on:
@@ -14,37 +16,25 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    # See https://github.com/actions-hub/docker
-    - name: Login to docker hub
-      uses: actions-hub/docker/login@v1.0.2
-      env:
-        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+    # See https://github.com/docker/setup-qemu-action
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v1
 
-    # Register qemu-*-static for all supported processors except the 
-    # current one, but also remove all registered binfmt_misc before
-    - name: Register QEMU
-      run: docker run --rm --privileged multiarch/qemu-user-static:register --reset
+    # See https://github.com/docker/setup-buildx-action
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
 
-    - name: Build the Docker image (amd64)
-      run: |
-        docker build . --file amd64.dockerfile --tag ${{ github.repository }}:amd64
-        docker push ${{ github.repository }}:amd64
-    - name: Build the Docker image (arm32v5)
-      run: |
-        docker build . --file arm32v5.dockerfile --tag ${{ github.repository }}:arm32v5
-        docker push ${{ github.repository }}:arm32v5
-    - name: Build the Docker image (arm32v5)
-      run: |
-        docker build . --file arm32v7.dockerfile --tag ${{ github.repository }}:arm32v7
-        docker push ${{ github.repository }}:arm32v7
-    - name: Build the Docker image (arm32v5)
-      run: |
-        docker build . --file arm64v8.dockerfile --tag ${{ github.repository }}:arm64v8
-        docker push ${{ github.repository }}:arm64v8
+    # See https://github.com/docker/login-action
+    - name: Login to DockerHub
+      uses: docker/login-action@v1 
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
 
-    - name: Publish manifest
-      run: |
-        curl -Lo manifest-tool https://github.com/estesp/manifest-tool/releases/download/v0.9.0/manifest-tool-linux-amd64
-        chmod +x manifest-tool
-        ./manifest-tool push from-spec multi-arch-manifest.yaml
+    - name: Build and push
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        platforms: linux/amd64,linux/arm32v5,linux/arm32v7,linux/arm64v8
+        push: true
+        tags: ckulka/docker-multi-arch-example-gh:latest
