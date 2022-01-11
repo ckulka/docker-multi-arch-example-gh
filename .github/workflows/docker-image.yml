@@ -43,7 +43,7 @@ jobs:
       uses: docker/build-push-action@v2
       with:
         file: arm32v5.dockerfile
-        platforms: linux/arm
+        platforms: linux/arm/v5
         push: true
         tags: ckulka/docker-multi-arch-example-gh:arm32v5
 
