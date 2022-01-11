@@ -5,7 +5,7 @@ ENV QEMU_URL https://github.com/balena-io/qemu/releases/download/v3.0.0%2Bresin/
 RUN apk add curl && curl -L ${QEMU_URL} | tar zxvf - -C . --strip-components 1
 
 
-FROM python:3-slim
+FROM arm32v5/python:3-slim
 
 # Add QEMU
 COPY --from=builder qemu-arm-static /usr/bin
