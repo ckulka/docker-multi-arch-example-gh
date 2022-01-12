@@ -2,7 +2,7 @@ name: Update Docker Hub Description
 on:
   push:
     branches:
-      - main
+      - master
     paths:
       - README.md
       - .github/workflows/dockerhub-description.yml
@@ -17,4 +17,5 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          repository: ckulka/docker-multi-arch-example-gh
           short-description: ${{ github.event.repository.description }}
