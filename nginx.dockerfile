@@ -15,23 +15,23 @@ LABEL repository="https://github.com/ckulka/baikal-docker"
 LABEL website="http://sabre.io/baikal/"
 
 # Install dependencies: PHP (with libffi6 dependency) & SQLite3
-# RUN curl -o /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg &&\
-#   apt update                  &&\
-#   apt install -y lsb-release  &&\
-#   echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list &&\
-#   apt remove -y lsb-release   &&\
-#   apt update                  &&\
-#     apt install -y            \
-#     php8.1-curl               \
-#     php8.1-fpm                \
-#     php8.1-mbstring           \
-#     php8.1-mysql              \
-#     php8.1-sqlite3            \
-#     php8.1-xml                \
-#     sqlite3                   \
-#     sendmail                  &&\
-#   rm -rf /var/lib/apt/lists/* &&\
-#   sed -i 's/www-data/nginx/' /etc/php/8.1/fpm/pool.d/www.conf
+RUN curl -o /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg &&\
+  apt update                  &&\
+  apt install -y lsb-release  &&\
+  echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list &&\
+  apt remove -y lsb-release   &&\
+  apt update                  &&\
+    apt install -y            \
+    php8.1-curl               \
+    php8.1-fpm                \
+    php8.1-mbstring           \
+    php8.1-mysql              \
+    php8.1-sqlite3            \
+    php8.1-xml                \
+    sqlite3                   \
+    sendmail                  &&\
+  rm -rf /var/lib/apt/lists/* &&\
+  sed -i 's/www-data/nginx/' /etc/php/8.1/fpm/pool.d/www.conf
 
 # Add Baikal & nginx configuration
 COPY --from=builder baikal /var/www/baikal
