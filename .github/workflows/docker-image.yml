@@ -3,7 +3,10 @@ name: Docker Image CI
 on:
   workflow_call:
     inputs:
-      tag_prefix:
+      apache_tags:
+        required: true
+        type: string
+      nginx_tags:
         required: true
         type: string
     secrets:
@@ -35,24 +38,18 @@ jobs:
           password: ${{ secrets.password }}
 
       # See https://github.com/docker/build-push-action/blob/master/docs/advanced/multi-platform.md
-      - name: Build and push Apache httpd variant
-        uses: docker/build-push-action@v2
-        with:
-          file: apache.dockerfile
-          platforms: linux/amd64,linux/arm/v7,linux/arm64/v8
-          push: true
-          tags: |
-            ${{ github.repository }}:${{ inputs.tag_prefix }}-apache
-            ${{ github.repository }}:${{ inputs.tag_prefix }}
-            ${{ github.repository }}:apache
-            ${{ github.repository }}:latest
+      # - name: Build and push Apache httpd variant
+      #   uses: docker/build-push-action@v2
+      #   with:
+      #     file: apache.dockerfile
+      #     platforms: linux/amd64,linux/arm/v7,linux/arm64/v8
+      #     push: true
+      #     tags: ${{ inputs.apache_tags }}
 
       - name: Build and push nginx variant
         uses: docker/build-push-action@v2
         with:
-          file: apache.dockerfile
+          file: nginx.dockerfile
           platforms: linux/amd64,linux/arm/v7,linux/arm64/v8
           push: true
-          tags: |
-            ${{ github.repository }}:${{ inputs.tag_prefix }}-nginx
-            ${{ github.repository }}:nginx
+          tags: ${{ inputs.nginx_tags }}

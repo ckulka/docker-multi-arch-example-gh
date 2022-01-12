@@ -7,7 +7,7 @@ ADD https://github.com/sabre-io/Baikal/releases/download/$VERSION/baikal-$VERSIO
 RUN apk add unzip && unzip -q baikal-$VERSION.zip
 
 # Final Docker image
-FROM nginx:mainline
+FROM nginx:1
 
 LABEL description="Baikal is a Cal and CardDAV server, based on sabre/dav, that includes an administrative interface for easy management."
 LABEL version="0.8.0"
@@ -24,7 +24,7 @@ RUN curl -o /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg
   php8.0-fpm \
   php8.0-mbstring \
   php8.0-mysql \
-  php8.0-sqlite \
+  php8.0-sqlite3 \
   php8.0-xmlwriter \
   sqlite3 \
   sendmail \

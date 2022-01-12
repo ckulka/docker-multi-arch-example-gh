@@ -13,7 +13,11 @@ jobs:
     if: github.event_name == 'push'
     uses: ckulka/docker-multi-arch-example-gh/.github/workflows/docker-image.yml@master
     with:
-      tag_prefix: experimental
+      apache_tags: |
+        ${{ github.repository }}:experimental-apache
+        ${{ github.repository }}:experimental
+      nginx_tags: |
+        ${{ github.repository }}:experimental-nginx
     secrets:
       username: ${{ secrets.DOCKERHUB_USERNAME }}
       password: ${{ secrets.DOCKERHUB_PASSWORD }}
@@ -22,7 +26,14 @@ jobs:
     if: github.event_name == 'release'
     uses: ckulka/docker-multi-arch-example-gh/.github/workflows/docker-image.yml@master
     with:
-      tag_prefix: ${{ github.ref_name }}
+      apache_tags: |
+        ${{ github.repository }}:${{ github.ref_name }}-apache
+        ${{ github.repository }}:${{ github.ref_name }}
+        ${{ github.repository }}:apache
+        ${{ github.repository }}:latest
+      nginx_tags: |
+        ${{ github.repository }}:${{ github.ref_name }}-nginx
+        ${{ github.repository }}:nginx
     secrets:
       username: ${{ secrets.DOCKER_USERNAME }}
       password: ${{ secrets.DOCKER_PASSWORD }}
