@@ -1,4 +1,4 @@
-name: master
+name: docker build
 
 on:
   push:
@@ -11,7 +11,7 @@ on:
 jobs:
   experimental:
     if: github.event_name == 'push'
-    uses: ckulka/docker-multi-arch-example-gh/.github/workflows/docker-image.yml@master
+    uses: ckulka/docker-multi-arch-example-gh/.github/workflows/docker-build-reusable-workflow.yml@master
     with:
       apache_tags: |
         ${{ github.repository }}:experimental-apache
@@ -24,7 +24,7 @@ jobs:
 
   release:
     if: github.event_name == 'release'
-    uses: ckulka/docker-multi-arch-example-gh/.github/workflows/docker-image.yml@master
+    uses: ckulka/docker-multi-arch-example-gh/.github/workflows/docker-build-reusable-workflow.yml@master
     with:
       apache_tags: |
         ${{ github.repository }}:${{ github.ref_name }}-apache
