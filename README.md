@@ -6,6 +6,8 @@ This example also only relies on Docker Hub to build all images, including the A
 
 It's a TL;DR version of the references linked in the README.
 
+my changed line
+
 ## Steps
 
 To create a multi-arch image, follow the next 4 steps

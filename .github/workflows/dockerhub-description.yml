@@ -1,13 +1,14 @@
 name: Update Docker Hub Description
 on:
-  push:
-    branches:
-      - master
+  release:
+    types:
+      - published
     paths:
       - README.md
       - .github/workflows/dockerhub-description.yml
 jobs:
   dockerHubDescription:
+    name: Update Docker Hub Description
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
