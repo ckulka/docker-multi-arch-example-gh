@@ -1,14 +1,9 @@
-# See https://github.com/docker/build-push-action/blob/master/docs/advanced/multi-platform.md
-
 name: Docker Image CI
 
 on:
   workflow_call:
     inputs:
-      variant:
-        required: true
-        type: string
-      variant_prefix:
+      tag_prefix:
         required: true
         type: string
     secrets:
@@ -39,49 +34,25 @@ jobs:
           username: ${{ secrets.username }}
           password: ${{ secrets.password }}
 
-      # Platforms argument not needed, because we build on amd64
-      - name: Build and push ${{ inputs.variant_prefix }}amd64
+      # See https://github.com/docker/build-push-action/blob/master/docs/advanced/multi-platform.md
+      - name: Build and push Apache httpd variant
         uses: docker/build-push-action@v2
         with:
+          file: apache.dockerfile
+          platforms: linux/amd64,linux/arm/v7,linux/arm64/v8
           push: true
-          tags: ${{ github.repository }}:${{ inputs.variant_prefix }}amd64
+          tags: |
+            ${{ github.repository }}:${{ inputs.tag_prefix }}-apache
+            ${{ github.repository }}:${{ inputs.tag_prefix }}
+            ${{ github.repository }}:apache
+            ${{ github.repository }}:latest
 
-      # Edge case: platform not supported by QEMU and Alpine base images don't
-      # exist. Workaround is to use a separate Dockerfile and correct the
-      # annotations later with docker manifest command.
-      - name: Build and push ${{ inputs.variant_prefix }}arm32v5
+      - name: Build and push nginx variant
         uses: docker/build-push-action@v2
         with:
-          file: arm32v5.dockerfile
+          file: apache.dockerfile
+          platforms: linux/amd64,linux/arm/v7,linux/arm64/v8
           push: true
-          tags: ${{ github.repository }}:${{ inputs.variant_prefix }}arm32v5
-
-      - name: Build and push ${{ inputs.variant_prefix }}arm32v7
-        uses: docker/build-push-action@v2
-        with:
-          platforms: linux/arm/v7
-          push: true
-          tags: ${{ github.repository }}:${{ inputs.variant_prefix }}arm32v7
-
-      - name: Build and push ${{ inputs.variant_prefix }}arm64v8
-        uses: docker/build-push-action@v2
-        with:
-          platforms: linux/arm64/v8
-          push: true
-          tags: ${{ github.repository }}:${{ inputs.variant_prefix }}arm64v8
-
-      # Build the manifest, fix the annotations for our arm32v5 edge case and
-      # upload the manifest to the Docker registry.
-      - name: Publish multi-arch manifest ${{ inputs.variant }}
-        run: |
-          docker manifest create ${{ github.repository }}:${{ inputs.variant }} \
-            ${{ github.repository }}:${{ inputs.variant_prefix }}amd64    \
-            ${{ github.repository }}:${{ inputs.variant_prefix }}arm32v5  \
-            ${{ github.repository }}:${{ inputs.variant_prefix }}arm32v7  \
-            ${{ github.repository }}:${{ inputs.variant_prefix }}arm64v8
-          docker manifest annotate --os linux --arch arm --variant v5 ${{ github.repository }}:${{ inputs.variant }} ${{ github.repository }}:${{ inputs.variant_prefix }}arm32v5
-          docker manifest push ${{ github.repository }}:${{ inputs.variant }}
-        env:
-          # This flag won't be needed in later versions of Docker. It has been
-          # deprecated, experimental features will be enabled by default.
-          DOCKER_CLI_EXPERIMENTAL: enabled
+          tags: |
+            ${{ github.repository }}:${{ inputs.tag_prefix }}-nginx
+            ${{ github.repository }}:nginx

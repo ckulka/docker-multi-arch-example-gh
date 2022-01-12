@@ -1,25 +1,28 @@
-name: release
+name: main
 
 on:
+  push:
+    branches:
+      - master
   release:
     types:
       - published
 
 jobs:
-  latest:
+  experimental:
+    if: github.event_name == 'push'
     uses: ckulka/docker-multi-arch-example-gh/.github/workflows/docker-image.yml@master
     with:
-      variant: latest
-      variant_prefix: ""
+      tag_prefix: experimental
     secrets:
-      username: ${{ secrets.DOCKER_USERNAME }}
-      password: ${{ secrets.DOCKER_PASSWORD }}
+      username: ${{ secrets.DOCKERHUB_USERNAME }}
+      password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
   release:
+    if: github.event_name == 'release'
     uses: ckulka/docker-multi-arch-example-gh/.github/workflows/docker-image.yml@master
     with:
-      variant: ${{ github.ref_name }}
-      variant_prefix: ${{ github.ref_name }}-
+      tag_prefix: ${{ github.ref_name }}
     secrets:
       username: ${{ secrets.DOCKER_USERNAME }}
       password: ${{ secrets.DOCKER_PASSWORD }}
