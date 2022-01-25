@@ -21,6 +21,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Get the release version by stripping build metadata from the release name
+      - name: Parse release tag
+        run: echo DOCKER_RELEASE_TAG=${GITHUB_REF_NAME/+*/} >> $GITHUB_ENV
+
+      - name: Print version
+        run: echo ${{ env.DOCKER_RELEASE_TAG }}
+
       - uses: actions/checkout@v2
 
       # See https://github.com/docker/setup-qemu-action
